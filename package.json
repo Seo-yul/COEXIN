@@ -1,0 +1,17 @@
+{
+  "name": "coex_event",
+  "version": "1.0.0",
+  "description": "show coex event page",
+  "main": "kakakochatbot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node kakaochatbot.js"
+  },
+  "author": "seoyulyoon",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "mysql": "^2.15.0"
+  }
+}
