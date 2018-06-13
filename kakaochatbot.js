@@ -75,10 +75,13 @@ app.post('/message', function (req, res) {
         }
         const today = d.getFullYear() + "-" + todayClock(month) + "-" + todayClock(day) + "-" + todayClock(hour) + ":" + todayClock(min) + ":" + todayClock(sec)
 
+
+        content.replace("\\", " ");
+
         systemlog = "echo [{date : " + today + " } {" + user_key + " : " + content + "}]" + endlog
 
         exec(systemlog, function (err, stdout, stderr) { })
-
+        console.log(content)
 
 })
 
