@@ -324,7 +324,7 @@ app.post('/message', function (req, res) {
                                 'content-type': 'application/json'
                         }).send(JSON.stringify(botmsg))
                 }
-        } else if (content == "오크우드" || content == "ㅇㅋㅇㄷ") {
+        } else if (content == "오크" || content == "ㅇㅋ") {
                 connection.query('select OAKWOOD_TODAY, OAKWOOD_MEAL from OAKWOOD where OAKWOOD_NUMBER = (select MAX(OAKWOOD_NUMBER) from OAKWOOD )', function (err, rows) {
                         if (err) throw err
 
@@ -387,7 +387,7 @@ app.post('/message', function (req, res) {
                                 'content-type': 'application/json'
                         }).send(JSON.stringify(botmsg))
                 }
-        } else if (content == "구내" || content == "ㄱㄴ") {
+        } else if (content == "무역" || content == "ㅁㅇ") {
                 connection.query('select Gunea_TODAY, Gunea_MEAL from Gunea where Gunea_NUMBER = (select MAX(Gunea_NUMBER) from Gunea )', function (err, rows) {
                         if (err) throw err
 
@@ -441,7 +441,7 @@ app.post('/message', function (req, res) {
                 })
         } else {
 
-                botsay = "[코엑스인 사용법]\n다음의 키워드를 입력해주세요\n[행사검색]\n 전시, 컨벤션\n[식당메뉴]\n 오크우드: 오크우드 or ㅇㅋㅇㄷ\n 2층구내식당: 구내 or ㄱㄴ"
+                botsay = "[코엑스인 사용법]\n다음의 키워드를 입력해주세요\n[행사검색]\n 전시, 컨벤션\n[구내식당]\n 오크우드: 오크 or ㅇㅋ\n무역센터: 무역 or ㅁㅇ"
 
                 botmsg = {
                         'message': {
