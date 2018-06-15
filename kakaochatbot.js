@@ -22,6 +22,19 @@ const todayClock = (v) => {
 const todaylog = d.getFullYear() + "-" + todayClock(month) + "-" + todayClock(day) + "-" + todayClock(hour) + ":" + todayClock(min) + ":" + todayClock(sec)
 const today = d.getFullYear() + "년" + todayClock(month) + "월" + todayClock(day) + "일"
 
+function errorthrow() {
+        botsay = "오류발생! 죄송합니다. 오류가 발생한 기능을 남겨주시면 감사하겠습니다."
+        botmsg = {
+                'message': {
+                        'text': botsay
+                }
+        }
+        res.set({
+                'content-type': 'application/json'
+        }).send(JSON.stringify(botmsg))
+}
+
+
 app.get('/keyboard', function (req, res) {
         var keyboard = {
                 'type': 'text'
@@ -38,7 +51,7 @@ app.post('/message', function (req, res) {
 
         if (content == "오늘전시" || content == "ㅇㄴㅈㅅ" || content == "ㅇㄵㅅ") {
                 connection.query('select EVENT_NUMBER, EVENT_NAME, EVENT_END, EVENT_FEE from COEX_EVENT where EVENT_START <= CURRENT_DATE( ) and EVENT_END > CURRENT_DATE( )', function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
 
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
@@ -74,7 +87,7 @@ app.post('/message', function (req, res) {
                 })
         } else if (content == "일주전시" || content == "ㅇㅈㅈㅅ") {
                 connection.query('select EVENT_NUMBER, EVENT_NAME, EVENT_START, EVENT_END from COEX_EVENT where EVENT_START > date_add(now(), interval +0 day) and EVENT_START <= date_add(now(), interval +7 day)', function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
 
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
@@ -126,7 +139,7 @@ app.post('/message', function (req, res) {
                         var sqlquery = "select EVENT_NUMBER, EVENT_NAME, EVENT_START, EVENT_END, EVENT_PLACE, EVENT_FEE, EVENT_HOST, EMAIL, HOMEPAGE from COEX_EVENT where EVENT_NUMBER = " + detailNum
 
                         connection.query(sqlquery, function (err, rows) {
-                                if (err) throw err
+                                if (err) throw errorthrow()
 
                                 Object.keys(rows).forEach(function (key) {
                                         var row = rows[key]
@@ -183,7 +196,7 @@ app.post('/message', function (req, res) {
         //
         else if (content == "오늘컨벤션" || content == "ㅇㄴㅋㅂㅅ" || content == "ㅇㄴㅋㅄ") {
                 connection.query('select CON_NUMBER, CON_NAME, CON_END, CON_PLACE from COEX_CONVENTION where CON_START <= CURRENT_DATE( ) and CON_END >= CURRENT_DATE( )', function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
 
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
@@ -210,7 +223,7 @@ app.post('/message', function (req, res) {
                 })
         } else if (content == "일주컨벤션" || content == "ㅇㅈㅋㅄ" || content == "ㅇㅈㅋㅂㅅ") {
                 connection.query('select CON_NUMBER, CON_NAME, CON_START, CON_END from COEX_CONVENTION where CON_START > date_add(now(), interval +0 day) and CON_START <= date_add(now(), interval +7 day)', function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
 
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
@@ -258,7 +271,7 @@ app.post('/message', function (req, res) {
                         var sqlquery = "select CON_NUMBER, CON_NAME, CON_START, CON_END, CON_PLACE, CON_HOST, PHONE, EMAIL, HOMEPAGE from COEX_CONVENTION where CON_NUMBER = " + detailNum
 
                         connection.query(sqlquery, function (err, rows) {
-                                if (err) throw err
+                                if (err) throw errorthrow()
 
                                 Object.keys(rows).forEach(function (key) {
                                         var row = rows[key]
@@ -308,47 +321,59 @@ app.post('/message', function (req, res) {
                 var admincheck = "admin"
                 admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
                 connection.query(admincheck, function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
                                 admincheck = row.UserID
                         })
-                })
-                oakadmin = "SELECT UserID from signUser where UserInfo = 'oakadmin'"
-                if (user_key == admincheck || user_key == oakadmin) {
-                        var detail = content.split("메뉴등록")
-                        var detailmeal = detail[1]
-                        var sqlquery = "insert into OAKWOOD (OAKWOOD_MEAL) VALUES('" + detailmeal + "')"
 
-                        connection.query(sqlquery, function (err, rows) {
-                                if (err) throw err
+                        oakadmin = "SELECT UserID from signUser where UserInfo = 'oakadmin'"
+                        connection.query(oakadmin, function (err, rows) {
+                                if (err) throw errorthrow()
+                                Object.keys(rows).forEach(function (key) {
+                                        var row = rows[key]
+                                        oakadmin = row.UserID
+                                })
+                                if (user_key == admincheck || user_key == oakadmin) {
+                                        var detail = content.split("메뉴등록")
+                                        var detailmeal = detail[1]
+                                        var sqlquery = "insert into OAKWOOD (OAKWOOD_MEAL) VALUES('" + detailmeal + "')"
+
+                                        connection.query(sqlquery, function (err, rows) {
+                                                if (err) throw errorthrow()
+                                        })
+                                        botsay = "등록성공."
+                                        botmsg = {
+                                                'message': {
+                                                        'text': botsay
+                                                }
+                                        }
+
+                                        res.set({
+                                                'content-type': 'application/json'
+                                        }).send(JSON.stringify(botmsg))
+
+                                } else {
+                                        botsay = "권한이 없습니다."
+                                        botmsg = {
+                                                'message': {
+                                                        'text': botsay
+                                                }
+                                        }
+
+                                        res.set({
+                                                'content-type': 'application/json'
+                                        }).send(JSON.stringify(botmsg))
+                                }
+
+
                         })
-                        botsay = "등록성공."
-                        botmsg = {
-                                'message': {
-                                        'text': botsay
-                                }
-                        }
+                })
 
-                        res.set({
-                                'content-type': 'application/json'
-                        }).send(JSON.stringify(botmsg))
 
-                } else {
-                        botsay = "권한이 없습니다."
-                        botmsg = {
-                                'message': {
-                                        'text': botsay
-                                }
-                        }
-
-                        res.set({
-                                'content-type': 'application/json'
-                        }).send(JSON.stringify(botmsg))
-                }
         } else if (content == "오크" || content == "ㅇㅋ") {
                 connection.query('select OAKWOOD_TODAY, OAKWOOD_MEAL from OAKWOOD where OAKWOOD_NUMBER = (select MAX(OAKWOOD_NUMBER) from OAKWOOD )', function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
 
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
@@ -380,47 +405,55 @@ app.post('/message', function (req, res) {
                 var admincheck = "admin"
                 admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
                 connection.query(admincheck, function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
                                 admincheck = row.UserID
                         })
-                })
-                tradeadmin = "SELECT UserID from signUser where UserInfo = 'tradeadmin'"
-                if (user_key == admincheck || user_key == tradeadmin) {
-                        var detail = content.split("식단등록")
-                        var detailmeal = detail[1]
-                        var sqlquery = "insert into Gunea (Gunea_MEAL) VALUES('" + detailmeal + "')"
+                        tradeadmin = "SELECT UserID from signUser where UserInfo = 'tradeadmin'"
+                        connection.query(tradeadmin, function (err, rows) {
+                                if (err) throw errorthrow()
+                                Object.keys(rows).forEach(function (key) {
+                                        var row = rows[key]
+                                        tradeadmin = row.UserID
+                                })
+                                if (user_key == admincheck || user_key == tradeadmin) {
+                                        var detail = content.split("식단등록")
+                                        var detailmeal = detail[1]
+                                        var sqlquery = "insert into Gunea (Gunea_MEAL) VALUES('" + detailmeal + "')"
 
-                        connection.query(sqlquery, function (err, rows) {
-                                if (err) throw err
+                                        connection.query(sqlquery, function (err, rows) {
+                                                if (err) throw errorthrow()
+                                        })
+                                        botsay = "등록성공."
+                                        botmsg = {
+                                                'message': {
+                                                        'text': botsay
+                                                }
+                                        }
+
+                                        res.set({
+                                                'content-type': 'application/json'
+                                        }).send(JSON.stringify(botmsg))
+
+                                } else {
+                                        botsay = "권한이 없습니다."
+                                        botmsg = {
+                                                'message': {
+                                                        'text': botsay
+                                                }
+                                        }
+
+                                        res.set({
+                                                'content-type': 'application/json'
+                                        }).send(JSON.stringify(botmsg))
+                                }
                         })
-                        botsay = "등록성공."
-                        botmsg = {
-                                'message': {
-                                        'text': botsay
-                                }
-                        }
+                })
 
-                        res.set({
-                                'content-type': 'application/json'
-                        }).send(JSON.stringify(botmsg))
-
-                } else {
-                        botsay = "권한이 없습니다."
-                        botmsg = {
-                                'message': {
-                                        'text': botsay
-                                }
-                        }
-
-                        res.set({
-                                'content-type': 'application/json'
-                        }).send(JSON.stringify(botmsg))
-                }
         } else if (content == "무역" || content == "ㅁㅇ") {
                 connection.query('select Gunea_TODAY, Gunea_MEAL from Gunea where Gunea_NUMBER = (select MAX(Gunea_NUMBER) from Gunea )', function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
 
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
@@ -450,7 +483,7 @@ app.post('/message', function (req, res) {
                 var admincheck = "admin"
                 admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
                 connection.query(admincheck, function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
                                 admincheck = row.UserID
@@ -458,7 +491,7 @@ app.post('/message', function (req, res) {
                 })
                 if (user_key == admincheck) {
                         connection.query('select LOG_NUMBER, LOG_TODAY, LOG_TEXT from LOGTEXT where LOG_NUMBER > (select Max(LOG_NUMBER)-3 from LOGTEXT)', function (err, rows) {
-                                if (err) throw err
+                                if (err) throw errorthrow()
 
                                 Object.keys(rows).forEach(function (key) {
                                         var row = rows[key]
@@ -495,103 +528,106 @@ app.post('/message', function (req, res) {
                 var admincheck = "admin"
                 admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
                 connection.query(admincheck, function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
                                 admincheck = row.UserID
                         })
-                })
-                if (user_key == admincheck) {
-                        oakuser = "SELECT UserID from signUser where UserInfo = 'oakuser'"
-                        connection.query(oakuser, function (err, rows) {
-                                if (err) throw err
+                        if (user_key == admincheck) {
+                                oakuser = "SELECT UserID from signUser where UserInfo = 'oakuser'"
+                                connection.query(oakuser, function (err, rows) {
+                                        if (err) throw errorthrow()
 
-                                Object.keys(rows).forEach(function (key) {
-                                        var row = rows[key]
-                                        oakuser = row.UserID
+                                        Object.keys(rows).forEach(function (key) {
+                                                var row = rows[key]
+                                                oakuser = row.UserID
+                                        })
+                                        oakadmin = "UPDATE signUser SET UserID = '" + oakuser + "' WHERE UserInfo = 'oakadmin'"
+                                        connection.query(oakadmin, function (err, rows) {
+                                                if (err) throw errorthrow()
+                                        })
                                 })
-                        })
-                        oakadmin = "UPDATE signUser SET UserID = '" + oakuser + "' WHERE UserInfo = 'oakadmin'"
-                        connection.query(oakuser, function (err, rows) {
-                                if (err) throw err
-                        })
-                        botsay = "오크우드 식단등록 권한이 승인되었습니다."
-                        botmsg = {
-                                'message': {
-                                        'text': botsay
+
+                                botsay = "오크우드 메뉴등록 권한이 승인되었습니다."
+                                botmsg = {
+                                        'message': {
+                                                'text': botsay
+                                        }
                                 }
-                        }
-                        res.set({
-                                'content-type': 'application/json'
-                        }).send(JSON.stringify(botmsg))
-                } else {
-                        botsay = "권한이 없습니다."
-                        botmsg = {
-                                'message': {
-                                        'text': botsay
+                                res.set({
+                                        'content-type': 'application/json'
+                                }).send(JSON.stringify(botmsg))
+                        } else {
+                                botsay = "권한이 없습니다."
+                                botmsg = {
+                                        'message': {
+                                                'text': botsay
+                                        }
                                 }
+                                res.set({
+                                        'content-type': 'application/json'
+                                }).send(JSON.stringify(botmsg))
                         }
-                        res.set({
-                                'content-type': 'application/json'
-                        }).send(JSON.stringify(botmsg))
-                }
+                })
+
 
         } else if (content == "무역센터 권한승인") {
 
                 var admincheck = "admin"
                 admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
                 connection.query(admincheck, function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
                                 admincheck = row.UserID
                         })
-                })
-                if (user_key == admincheck) {
-                        tradeuser = "SELECT UserID from signUser where UserInfo = 'tradeuser'"
-                        connection.query(tradeuser, function (err, rows) {
-                                if (err) throw err
-                                Object.keys(rows).forEach(function (key) {
-                                        var row = rows[key]
-                                        tradeuser = row.UserID
+                        if (user_key == admincheck) {
+                                tradeuser = "SELECT UserID from signUser where UserInfo = 'tradeuser'"
+                                connection.query(tradeuser, function (err, rows) {
+                                        if (err) throw errorthrow()
+                                        Object.keys(rows).forEach(function (key) {
+                                                var row = rows[key]
+                                                tradeuser = row.UserID
+                                        })
+                                        tradeadmin = "UPDATE signUser SET UserID = '" + tradeuser + "' WHERE UserInfo = 'tradeadmin'"
+                                        connection.query(tradeadmin, function (err, rows) {
+                                                if (err) throw errorthrow()
+                                        })
                                 })
-                        })
-                        tradeadmin = "UPDATE signUser SET UserID = '" + tradeuser + "' WHERE UserInfo = 'tradeadmin'"
-                        connection.query(oakuser, function (err, rows) {
-                                if (err) throw err
-                        })
 
-                        botsay = "무역센터 식단등록 권한이 승인되었습니다."
-                        botmsg = {
-                                'message': {
-                                        'text': botsay
+                                botsay = "무역센터 식단등록 권한이 승인되었습니다."
+                                botmsg = {
+                                        'message': {
+                                                'text': botsay
+                                        }
                                 }
-                        }
 
-                        res.set({
-                                'content-type': 'application/json'
-                        }).send(JSON.stringify(botmsg))
+                                res.set({
+                                        'content-type': 'application/json'
+                                }).send(JSON.stringify(botmsg))
 
-                } else {
-                        botsay = "권한이 없습니다."
-                        botmsg = {
-                                'message': {
-                                        'text': botsay
+                        } else {
+                                botsay = "권한이 없습니다."
+                                botmsg = {
+                                        'message': {
+                                                'text': botsay
+                                        }
                                 }
-                        }
 
-                        res.set({
-                                'content-type': 'application/json'
-                        }).send(JSON.stringify(botmsg))
-                }
+                                res.set({
+                                        'content-type': 'application/json'
+                                }).send(JSON.stringify(botmsg))
+                        }
+                })
+
         } else if (content == "오크우드 권한신청") {
 
                 oakuser = "UPDATE signUser SET UserID = '" + user_key + "' WHERE UserInfo = 'oakuser'"
                 connection.query(oakuser, function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
                 })
 
-                botsay = "오크우드 식단등록 권한이 신청되었습니다."
+                botsay = "오크우드 메뉴등록 권한이 신청되었습니다."
                 botmsg = {
                         'message': {
                                 'text': botsay
@@ -605,7 +641,7 @@ app.post('/message', function (req, res) {
 
                 tradeuser = "UPDATE signUser SET UserID = '" + user_key + "' WHERE UserInfo = 'tradeuser'"
                 connection.query(tradeuser, function (err, rows) {
-                        if (err) throw err
+                        if (err) throw errorthrow()
                 })
                 botsay = "무역센터 식단등록 권한이 신청되었습니다."
                 botmsg = {
@@ -645,7 +681,7 @@ app.post('/message', function (req, res) {
         var logsqlquery = "insert into LOGTEXT (LOG_TEXT, LOG_USER) VALUES('" + content + "','" + user_key + "')"
 
         connection.query(logsqlquery, function (err, rows) {
-                if (err) throw err
+                if (err) throw errorthrow()
         })
 
         content.replace("\\", " ");
