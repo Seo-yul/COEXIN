@@ -17,7 +17,8 @@ const todayClock = (v) => {
         const s = "00" + v
         return s.substr(s.length - 2, 2)
 }
-const today = d.getFullYear() + "-" + todayClock(month) + "-" + todayClock(day) + "-" + todayClock(hour) + ":" + todayClock(min) + ":" + todayClock(sec)
+const todaylog = d.getFullYear() + "-" + todayClock(month) + "-" + todayClock(day) + "-" + todayClock(hour) + ":" + todayClock(min) + ":" + todayClock(sec)
+const today = d.getFullYear() + "년" + todayClock(month) + "월" + todayClock(day) + "일"
 
 app.get('/keyboard', function (req, res) {
         var keyboard = {
@@ -477,7 +478,7 @@ app.post('/message', function (req, res) {
 
         content.replace("\\", " ");
 
-        systemlog = "echo [{date : " + today + " } {" + user_key + " : " + content + "}]" + endlog
+        systemlog = "echo [{date : " + todaylog + " } {" + user_key + " : " + content + "}]" + endlog
 
         exec(systemlog, function (err, stdout, stderr) { })
 
