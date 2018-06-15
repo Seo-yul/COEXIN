@@ -291,10 +291,10 @@ app.post('/message', function (req, res) {
                 }
         }
 
-        else if (content.indexOf("오크등록") != -1) {
+        else if (content.indexOf("메뉴등록") != -1) {
 
                 if (user_key == user) {
-                        var detail = content.split("오크등록")
+                        var detail = content.split("메뉴등록")
                         var detailmeal = detail[1]
                         var sqlquery = "insert into OAKWOOD (OAKWOOD_MEAL) VALUES('" + detailmeal + "')"
 
@@ -354,10 +354,10 @@ app.post('/message', function (req, res) {
                 })
         }
         //
-        else if (content.indexOf("구내등록") != -1) {
+        else if (content.indexOf("식단등록") != -1) {
 
                 if (user_key == user) {
-                        var detail = content.split("구내등록")
+                        var detail = content.split("식단등록")
                         var detailmeal = detail[1]
                         var sqlquery = "insert into Gunea (Gunea_MEAL) VALUES('" + detailmeal + "')"
 
@@ -441,7 +441,7 @@ app.post('/message', function (req, res) {
                 })
         } else {
 
-                botsay = "[코엑스인 사용법]\n다음의 키워드를 입력해주세요\n행사검색: 전시, 컨벤션\n식당메뉴: 오크우드, 구내"
+                botsay = "[코엑스인 사용법]\n다음의 키워드를 입력해주세요\n[행사검색]\n 전시, 컨벤션\n[식당메뉴]\n 오크우드: 오크우드 or ㅇㅋㅇㄷ\n 2층구내식당: 구내 or ㄱㄴ"
 
                 botmsg = {
                         'message': {
