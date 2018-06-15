@@ -6,25 +6,25 @@ const dbconfig = require('./database.js')
 const connection = mysql.createConnection(dbconfig)
 const app = express()
 const exec = require("child_process").exec
-const endlog = " >> input-log.log"
 app.use(bodyParser.json())
-const d = new Date()
-const [month, day, hour, min, sec] = [(d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()]
 const todayClock = (v) => {
         const s = "00" + v
         return s.substr(s.length - 2, 2)
 }
-const todaylog = d.getFullYear() + "-" + todayClock(month) + "-" + todayClock(day) + "-" + todayClock(hour) + ":" + todayClock(min) + ":" + todayClock(sec)
-const today = d.getFullYear() + "년" + todayClock(month) + "월" + todayClock(day) + "일"
-let systemlog = ""
-let oakuser = ""
-let tradeuser = ""
-let oakadmin = ""
-let tradeadmin = ""
-let botmsg = ""
-let user_key = ""
-let type = ""
-let content = ""
+let endlog
+let d
+let todaylog
+let today
+let datelog
+let systemlog
+let oakuser
+let tradeuser
+let oakadmin
+let tradeadmin
+let botmsg
+let user_key
+let type
+let content
 
 function respkakao(botsay, res) {
         botmsg = {
@@ -50,9 +50,16 @@ app.get('/keyboard', function (req, res) {
 })
 
 app.post('/message', function (req, res) {
+        d = new Date()
+        let [month, day, hour, min, sec] = [(d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()]
+        todaylog = d.getFullYear() + "-" + todayClock(month) + "-" + todayClock(day) + "-" + todayClock(hour) + ":" + todayClock(min) + ":" + todayClock(sec)
+        today = d.getFullYear() + "년" + todayClock(month) + "월" + todayClock(day) + "일"
+        datelog = d.getFullYear() + "-" + todayClock(month) + "-" + todayClock(day)
+        endlog = " >> ./log/" + datelog + ".log"
         user_key = decodeURIComponent(req.body.user_key) // user's key
         type = decodeURIComponent(req.body.type) // message type
         content = decodeURIComponent(req.body.content) // user's message
+
         botsay = 'botsay'
         oakuser = "oakuser"
         tradeuser = "tradeuser"
