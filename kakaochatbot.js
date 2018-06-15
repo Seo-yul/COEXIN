@@ -108,7 +108,7 @@ app.post('/message', function (req, res) {
         } else if (content.indexOf("전시자세히") != -1) {
 
                 var detail = content.split("전시자세히")
-                if (detail[1]&&detail[1]>0) {
+                if (detail[1] && detail[1] > 0) {
                         var detailNum = detail[1]
                         var sqlquery = "select EVENT_NUMBER, EVENT_NAME, EVENT_START, EVENT_END, EVENT_PLACE, EVENT_FEE, EVENT_HOST, EMAIL, HOMEPAGE from COEX_EVENT where EVENT_NUMBER = " + detailNum
 
@@ -240,7 +240,7 @@ app.post('/message', function (req, res) {
         } else if (content.indexOf("컨벤션자세히") != -1) {
 
                 var detail = content.split("컨벤션자세히")
-                if (detail[1]&&detail[1]>0) {
+                if (detail[1] && detail[1] > 0) {
                         var detailNum = detail[1]
                         var sqlquery = "select CON_NUMBER, CON_NAME, CON_START, CON_END, CON_PLACE, CON_HOST, PHONE, EMAIL, HOMEPAGE from COEX_CONVENTION where CON_NUMBER = " + detailNum
 
@@ -339,7 +339,7 @@ app.post('/message', function (req, res) {
 
 
                         if (botsay == "") {
-                                botsay = "준비중입니다."
+                                botsay = "식단준비중입니다."
                         }
 
                         botmsg = {
@@ -402,7 +402,31 @@ app.post('/message', function (req, res) {
 
 
                         if (botsay == "") {
-                                botsay = "준비중입니다."
+                                botsay = "식단준비중입니다."
+                        }
+
+                        botmsg = {
+                                'message': {
+                                        'text': botsay
+                                }
+                        }
+
+                        res.set({
+                                'content-type': 'application/json'
+                        }).send(JSON.stringify(botmsg))
+                })
+        } else if (content == "ㄺ" && user_key == user) {
+                connection.query('select LOG_NUMBER, LOG_TODAY, LOG_TEXT from LOGTEXT where LOG_NUMBER > (select Max(LOG_NUMBER)-3 from LOGTEXT)', function (err, rows) {
+                        if (err) throw err
+
+                        Object.keys(rows).forEach(function (key) {
+                                var row = rows[key]
+                                botsay += row.LOG_NUMBER + " : " + row.LOG_TODAY + "\n" + row.LOG_TEXT + "\n"
+                        })
+
+
+                        if (botsay == "") {
+                                botsay = "로그없음"
                         }
 
                         botmsg = {
@@ -441,7 +465,7 @@ app.post('/message', function (req, res) {
         const today = d.getFullYear() + "-" + todayClock(month) + "-" + todayClock(day) + "-" + todayClock(hour) + ":" + todayClock(min) + ":" + todayClock(sec)
 
 
-        var logsqlquery = "insert into LOGTEXT (LOG_MEAL, LOG_USER) VALUES('" + content + "','" + user_key + "')"
+        var logsqlquery = "insert into LOGTEXT (LOG_TEXT, LOG_USER) VALUES('" + content + "','" + user_key + "')"
 
         connection.query(logsqlquery, function (err, rows) {
                 if (err) throw err
