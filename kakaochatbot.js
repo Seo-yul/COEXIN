@@ -10,6 +10,15 @@ var systemlog = ""
 const endlog = " >> input-log.log"
 app.use(bodyParser.json())
 const user = "K9ZEXeLPxE1v"
+
+const d = new Date()
+const [month, day, hour, min, sec] = [(d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()]
+const todayClock = (v) => {
+        const s = "00" + v
+        return s.substr(s.length - 2, 2)
+}
+const today = d.getFullYear() + "-" + todayClock(month) + "-" + todayClock(day) + "-" + todayClock(hour) + ":" + todayClock(min) + ":" + todayClock(sec)
+
 app.get('/keyboard', function (req, res) {
         var keyboard = {
                 'type': 'text'
@@ -48,7 +57,8 @@ app.post('/message', function (req, res) {
                                         '종료일:' + row.EVENT_END.toLocaleDateString("ko-kr") + '\n' +
                                         '입장료: ' + fee + '\n'
                         })
-                        botsay += "\n자세히 보기: 전시자세히 전시번호"
+                        botsay += "\n자세히 보기: 전시자세히 전시번호\n" + today
+
                         botmsg = {
                                 'message': {
                                         'text': botsay
@@ -184,7 +194,7 @@ app.post('/message', function (req, res) {
                                         '장소: ' + row.CON_PLACE + '\n'
 
                         })
-                        botsay += "\n자세히 보기: 컨벤션자세히 컨벤션번호"
+                        botsay += "\n자세히 보기: 컨벤션자세히 컨벤션번호\n" + today
                         botmsg = {
                                 'message': {
                                         'text': botsay
@@ -333,7 +343,7 @@ app.post('/message', function (req, res) {
                                 var t = row.OAKWOOD_TODAY.getDate()
                                 var td = new Date()
                                 if (t == td.getDate()) {
-                                        botsay = row.OAKWOOD_MEAL
+                                        botsay = today + "\n" + row.OAKWOOD_MEAL
                                 }
                         })
 
@@ -396,7 +406,7 @@ app.post('/message', function (req, res) {
                                 var t = row.Gunea_TODAY.getDate()
                                 var td = new Date()
                                 if (t == td.getDate()) {
-                                        botsay = row.Gunea_MEAL
+                                        botsay = today + "\n" + row.Gunea_MEAL
                                 }
                         })
 
@@ -456,13 +466,7 @@ app.post('/message', function (req, res) {
 
 
 
-        const d = new Date()
-        const [month, day, hour, min, sec] = [(d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()]
-        const todayClock = (v) => {
-                const s = "00" + v
-                return s.substr(s.length - 2, 2)
-        }
-        const today = d.getFullYear() + "-" + todayClock(month) + "-" + todayClock(day) + "-" + todayClock(hour) + ":" + todayClock(min) + ":" + todayClock(sec)
+
 
 
         var logsqlquery = "insert into LOGTEXT (LOG_TEXT, LOG_USER) VALUES('" + content + "','" + user_key + "')"
