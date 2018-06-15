@@ -10,7 +10,10 @@ var systemlog = ""
 const endlog = " >> input-log.log"
 app.use(bodyParser.json())
 const user = "K9ZEXeLPxE1v"
-
+var oakuser = "help"
+var tradeuser = "help"
+var oakadmin = "oakadmin"
+var tradeadmin = "tradeadmin"
 const d = new Date()
 const [month, day, hour, min, sec] = [(d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()]
 const todayClock = (v) => {
@@ -304,7 +307,7 @@ app.post('/message', function (req, res) {
 
         else if (content.indexOf("메뉴등록") != -1) {
 
-                if (user_key == user) {
+                if (user_key == user || user_key == oakadmin) {
                         var detail = content.split("메뉴등록")
                         var detailmeal = detail[1]
                         var sqlquery = "insert into OAKWOOD (OAKWOOD_MEAL) VALUES('" + detailmeal + "')"
@@ -367,7 +370,7 @@ app.post('/message', function (req, res) {
         //
         else if (content.indexOf("식단등록") != -1) {
 
-                if (user_key == user) {
+                if (user_key == user || user_key == tradeuser) {
                         var detail = content.split("식단등록")
                         var detailmeal = detail[1]
                         var sqlquery = "insert into Gunea (Gunea_MEAL) VALUES('" + detailmeal + "')"
@@ -450,6 +453,54 @@ app.post('/message', function (req, res) {
                                 'content-type': 'application/json'
                         }).send(JSON.stringify(botmsg))
                 })
+        } else if (content == "오크우드 권한신청") {
+                oakuser = user_key
+                botsay = "오크우드 식단등록 권한이 신청되었습니다."
+                botmsg = {
+                        'message': {
+                                'text': botsay
+                        }
+                }
+
+                res.set({
+                        'content-type': 'application/json'
+                }).send(JSON.stringify(botmsg))
+        } else if (content == "무역센터 권한신청") {
+                tradeuser = user_key
+                botsay = "오크우드 식단등록 권한이 신청되었습니다."
+                botmsg = {
+                        'message': {
+                                'text': botsay
+                        }
+                }
+
+                res.set({
+                        'content-type': 'application/json'
+                }).send(JSON.stringify(botmsg))
+        } else if (content == "오크우드 권한승인") {
+                oakadmin = oakuser
+                botsay = "오크우드 식단등록 권한이 승인되었습니다."
+                botmsg = {
+                        'message': {
+                                'text': botsay
+                        }
+                }
+
+                res.set({
+                        'content-type': 'application/json'
+                }).send(JSON.stringify(botmsg))
+        } else if (content == "무역센터 권한신청") {
+                tradeadmin = tradeuser
+                botsay = "오크우드 식단등록 권한이 승인되었습니다."
+                botmsg = {
+                        'message': {
+                                'text': botsay
+                        }
+                }
+
+                res.set({
+                        'content-type': 'application/json'
+                }).send(JSON.stringify(botmsg))
         } else {
 
                 botsay = "[코엑스인 사용법]\n다음의 키워드를 입력해주세요\n[행사검색]\n 전시, 컨벤션\n[구내식당]\n 오크우드: 오크 or ㅇㅋ\n무역센터: 무역 or ㅁㅇ"
