@@ -352,7 +352,7 @@ app.post('/message', function (req, res) {
                         })
 
 
-                        if (botsay == "") {
+                        if (botsay == "" || (botsay == today + "\n")) {
                                 botsay = "식단준비중입니다."
                         }
 
@@ -415,7 +415,7 @@ app.post('/message', function (req, res) {
                         })
 
 
-                        if (botsay == "") {
+                        if (botsay == "" || (botsay == today + "\n")) {
                                 botsay = "식단준비중입니다."
                         }
 
@@ -492,6 +492,17 @@ app.post('/message', function (req, res) {
         } else if (content == "무역센터 권한신청") {
                 tradeadmin = tradeuser
                 botsay = "오크우드 식단등록 권한이 승인되었습니다."
+                botmsg = {
+                        'message': {
+                                'text': botsay
+                        }
+                }
+
+                res.set({
+                        'content-type': 'application/json'
+                }).send(JSON.stringify(botmsg))
+        } else if (content == "서율") {
+                botsay = "취직할 수 있을까.."
                 botmsg = {
                         'message': {
                                 'text': botsay
