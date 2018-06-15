@@ -16,15 +16,15 @@ const todayClock = (v) => {
 }
 const todaylog = d.getFullYear() + "-" + todayClock(month) + "-" + todayClock(day) + "-" + todayClock(hour) + ":" + todayClock(min) + ":" + todayClock(sec)
 const today = d.getFullYear() + "년" + todayClock(month) + "월" + todayClock(day) + "일"
-var systemlog = ""
-var oakuser = ""
-var tradeuser = ""
-var oakadmin = ""
-var tradeadmin = ""
-var botmsg = ""
-var user_key = ""
-var type = ""
-var content = ""
+let systemlog = ""
+let oakuser = ""
+let tradeuser = ""
+let oakadmin = ""
+let tradeadmin = ""
+let botmsg = ""
+let user_key = ""
+let type = ""
+let content = ""
 
 function respkakao(botsay, res) {
         botmsg = {
@@ -43,7 +43,7 @@ function errorthrow(res) {
 }
 
 app.get('/keyboard', function (req, res) {
-        var keyboard = {
+        let keyboard = {
                 'type': 'text'
         }
         res.send(keyboard)
