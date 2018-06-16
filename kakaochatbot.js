@@ -322,7 +322,7 @@ app.post('/message', function (req, res) {
                         }
                         respkakao(botsay, res)
                 })
-        } else if (content == "ㄺ") {
+        } else if (content == "ㄺ"||content == "로그") {
                 var admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
 
                 connection.query(admincheck, function (err, rows) {
@@ -331,24 +331,26 @@ app.post('/message', function (req, res) {
                                 var row = rows[key]
                                 admincheck = row.UserID
                         })
-                })
-                if (user_key == admincheck) {
-                        connection.query('select LOG_NUMBER, LOG_TODAY, LOG_TEXT from LOGTEXT where LOG_NUMBER > (select Max(LOG_NUMBER)-3 from LOGTEXT)', function (err, rows) {
-                                if (err) throw errorthrow()
 
-                                Object.keys(rows).forEach(function (key) {
-                                        var row = rows[key]
-                                        botsay += row.LOG_NUMBER + " : " + row.LOG_TODAY + "\n" + row.LOG_TEXT + "\n"
+                        if (user_key == admincheck) {
+                                connection.query('select LOG_NUMBER, LOG_TODAY, LOG_TEXT from LOGTEXT where LOG_NUMBER > (select Max(LOG_NUMBER)-3 from LOGTEXT)', function (err, rows) {
+                                        if (err) throw errorthrow()
+        
+                                        Object.keys(rows).forEach(function (key) {
+                                                var row = rows[key]
+                                                botsay += row.LOG_NUMBER + " : " + row.LOG_TODAY + "\n" + row.LOG_TEXT + "\n"
+                                        })
+                                        if (botsay == "") {
+                                                botsay = "로그없음"
+                                        }
+                                        respkakao(botsay, res)
                                 })
-                                if (botsay == "") {
-                                        botsay = "로그없음"
-                                }
+                        } else {
+                                botsay = "권한이 없습니다."
                                 respkakao(botsay, res)
-                        })
-                } else {
-                        botsay = "권한이 없습니다."
-                        respkakao(botsay, res)
-                }
+                        }
+                })
+                
         } else if (content == "오크우드 권한승인") {
                 var admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
                 connection.query(admincheck, function (err, rows) {
