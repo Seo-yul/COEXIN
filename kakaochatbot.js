@@ -265,7 +265,7 @@ app.post('/message', function (req, res) {
                                         botsay = today + "\n" + row.OAKWOOD_MEAL
                                 }
                         })
-                        if (botsay == "botsay" || (botsay == today + "\n")) {
+                        if (botsay == "" || (botsay == today + "\n")) {
                                 botsay = "식단준비중입니다."
                         }
                         respkakao(botsay, res)
@@ -316,11 +316,12 @@ app.post('/message', function (req, res) {
                                         botsay = today + "\n" + row.Gunea_MEAL
                                 }
                         })
-                        if (botsay == "botsay" || (botsay == today + "\n")) {
+                        if (botsay == "" || (botsay == today + "\n")) {
                                 botsay = "식단준비중입니다."
                         }
                         respkakao(botsay, res)
                 })
+
         } else if (content == "ㄺ" || content == "로그") {
                 var admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
 
