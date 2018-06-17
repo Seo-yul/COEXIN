@@ -321,7 +321,7 @@ app.post('/message', function (req, res) {
                         }
                         respkakao(botsay, res)
                 })
-        } else if (content == "ㄺ") {
+        } else if (content == "ㄺ" || content == "로그") {
                 var admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
 
                 connection.query(admincheck, function (err, rows) {
@@ -348,7 +348,6 @@ app.post('/message', function (req, res) {
                                 respkakao(botsay, res)
                         }
                 })
-
         } else if (content == "오크우드 권한승인") {
                 var admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
                 connection.query(admincheck, function (err, rows) {
