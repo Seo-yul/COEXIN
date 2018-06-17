@@ -59,7 +59,7 @@ app.post('/message', function (req, res) {
         user_key = decodeURIComponent(req.body.user_key) // user's key
         type = decodeURIComponent(req.body.type) // message type
         content = decodeURIComponent(req.body.content) // user's message
-        botsay = 'botsay'
+        botsay = ""
         oakuser = "oakuser"
         tradeuser = "tradeuser"
         oakadmin = "oakadmin"
@@ -333,7 +333,6 @@ app.post('/message', function (req, res) {
                         if (user_key == admincheck) {
                                 connection.query('select LOG_NUMBER, LOG_TODAY, LOG_TEXT from LOGTEXT where LOG_NUMBER > (select Max(LOG_NUMBER)-3 from LOGTEXT)', function (err, rows) {
                                         if (err) throw errorthrow()
-                                        botsay = ""
                                         Object.keys(rows).forEach(function (key) {
                                                 var row = rows[key]
                                                 botsay += row.LOG_NUMBER + " : " + row.LOG_TODAY + "\n" + row.LOG_TEXT + "\n"
