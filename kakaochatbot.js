@@ -103,9 +103,11 @@ app.post('/message', function (req, res) {
                                         "시작일:" + row.EVENT_START.toLocaleDateString("ko-kr") + "\n" +
                                         "종료일:" + row.EVENT_END.toLocaleDateString("ko-kr") + "\n"
                         })
-                        botsay += "\n자세히 보기: 전시자세히 행사번호"
+                        
                         if (botsay == "") {
                                 botsay = "엑스포가 없습니다."
+                        }else{
+                                botsay += "\n자세히 보기: 전시자세히 행사번호"
                         }
                         respkakao(botsay, res)
                 })
@@ -332,7 +334,7 @@ app.post('/message', function (req, res) {
                                 admincheck = row.UserID
                         })
                         if (user_key == admincheck) {
-                                connection.query('select LOG_NUMBER, LOG_TODAY, LOG_TEXT from LOGTEXT where LOG_NUMBER > (select Max(LOG_NUMBER)-3 from LOGTEXT)', function (err, rows) {
+                                connection.query('select LOG_NUMBER, LOG_TODAY, LOG_TEXT from LOGTEXT where LOG_NUMBER > (select Max(LOG_NUMBER)-10 from LOGTEXT)', function (err, rows) {
                                         if (err) throw errorthrow()
                                         Object.keys(rows).forEach(function (key) {
                                                 var row = rows[key]
