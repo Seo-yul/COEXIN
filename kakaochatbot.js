@@ -66,12 +66,13 @@ app.post('/message', function (req, res) {
         tradeadmin = "tradeadmin"
 
         if (content == "오늘전시" || content == "ㅇㄴㅈㅅ" || content == "ㅇㄵㅅ") {
+                botsay = ""
                 connection.query('select EVENT_NUMBER, EVENT_NAME, EVENT_END, EVENT_FEE from COEX_EVENT where EVENT_START <= CURRENT_DATE( ) and EVENT_END > CURRENT_DATE( )', function (err, rows) {
                         if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
                                 var fee = row.EVENT_FEE
-                                if (botsay != '') {
+                                if (botsay != "") {
                                         botsay += '\n'
                                 }
                                 if (fee.indexOf('원') != -1) {
@@ -86,7 +87,12 @@ app.post('/message', function (req, res) {
                                         '종료일:' + row.EVENT_END.toLocaleDateString("ko-kr") + '\n' +
                                         '입장료: ' + fee + '\n'
                         })
-                        botsay += "\n자세히 보기: 전시자세히 전시번호\n" + today
+                        if (botsay == "") {
+                                botsay = "오늘 전시가 없습니다."
+                        }else{
+                                botsay += "\n자세히 보기: 전시자세히 전시번호\n" + today
+                        }
+                        
                         respkakao(botsay, res)
                 })
         } else if (content == "일주전시" || content == "ㅇㅈㅈㅅ") {
@@ -105,7 +111,7 @@ app.post('/message', function (req, res) {
                         })
                         
                         if (botsay == "") {
-                                botsay = "엑스포가 없습니다."
+                                botsay = "전시가 없습니다."
                         }else{
                                 botsay += "\n자세히 보기: 전시자세히 행사번호"
                         }
@@ -159,7 +165,7 @@ app.post('/message', function (req, res) {
                         if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
-                                if (botsay != '') {
+                                if (botsay != "") {
                                         botsay += '\n'
                                 }
                                 botsay += "컨벤션번호: " + row.CON_NUMBER + "\n" +
@@ -167,7 +173,13 @@ app.post('/message', function (req, res) {
                                         '종료일: ' + row.CON_END.toLocaleDateString("ko-kr") + '\n' +
                                         '장소: ' + row.CON_PLACE + '\n'
                         })
-                        botsay += "\n자세히 보기: 컨벤션자세히 컨벤션번호\n" + today
+
+
+                        if (botsay == "") {
+                                botsay = "오늘 전시가 없습니다."
+                        }else{
+                                botsay += "\n자세히 보기: 컨벤션자세히 컨벤션번호\n" + today
+                        }
                         respkakao(botsay, res)
                 })
         } else if (content == "일주컨벤션" || content == "ㅇㅈㅋㅄ" || content == "ㅇㅈㅋㅂㅅ") {
