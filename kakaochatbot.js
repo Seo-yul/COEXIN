@@ -11,21 +11,26 @@ const todayClock = (v) => {
         const s = "00" + v
         return s.substr(s.length - 2, 2)
 }
-let endlog
-let d
-let todaylog
-let today
-let datelog
-let systemlog
-let oakuser
-let tradeuser
-let oakadmin
-let tradeadmin
-let botmsg
-let user_key
-let type
-let content
-
+let endlog //로그 찍기위한 변수
+let d //현재 날짜 Date() 저장
+let todaylog //로그에 사용 YYYY-MM-DD-HH:mm:ss 
+let today //Date()를 이용 YYYY년MM월DD일
+let datelog //Date()를 이용 YYYY-MM-DD
+let systemlog //로그파일 생성 명령
+let oakuser //오크우드 관리자 신청
+let tradeuser //무역센터 관리자 신청
+let oakadmin //오크우드 관리자 
+let tradeadmin //무역센터 관리자
+let botmsg //클라이언트에 res
+let user_key //클라이언트 key
+let type //클라이언트 msg type
+let content //req 값
+let sqlquery //query 문
+/**
+ * 
+ * @param {*} botsay 클라이언트에게 전송할 내용
+ * @param {*} res response
+ */
 function respkakao(botsay, res) {
         botmsg = {
                 'message': {
@@ -36,19 +41,27 @@ function respkakao(botsay, res) {
                 'content-type': 'application/json'
         }).send(JSON.stringify(botmsg))
 }
-
+/**
+ * 
+ * @param {*} res 오류메시지 담아 response 하기위함
+ */
 function errorthrow(res) {
         botsay = "오류발생! 죄송합니다. 오류가 발생한 기능을 남겨주시면 감사하겠습니다."
         respkakao(botsay, res)
 }
-
+/**
+ * 카카오서버는 /keyboard 주기적으로 봇서버의 상태를 확인함
+ */
 app.get('/keyboard', function (req, res) {
         let keyboard = {
                 'type': 'text'
         }
         res.send(keyboard)
 })
-
+/**
+ * 카카오서버가 클라이언트의 정보를 담아서 보내준다.
+ * 이때 body에 있는 user_key, type, content를 사용한다
+ */
 app.post('/message', function (req, res) {
         d = new Date()
         let [month, day, hour, min, sec] = [(d.getMonth() + 1), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()]
@@ -64,10 +77,10 @@ app.post('/message', function (req, res) {
         tradeuser = "tradeuser"
         oakadmin = "oakadmin"
         tradeadmin = "tradeadmin"
-
+        sqlquery = ""
         if (content == "오늘전시" || content == "ㅇㄴㅈㅅ" || content == "ㅇㄵㅅ") {
-                botsay = ""
-                connection.query('select EVENT_NUMBER, EVENT_NAME, EVENT_END, EVENT_FEE from COEX_EVENT where EVENT_START <= CURRENT_DATE( ) and EVENT_END > CURRENT_DATE( )', function (err, rows) {
+                sqlquery = "select EVENT_NUMBER, EVENT_NAME, EVENT_END, EVENT_FEE from COEX_EVENT where EVENT_START <= CURRENT_DATE( ) and EVENT_END > CURRENT_DATE( )"
+                connection.query(sqlquery, function (err, rows) {
                         if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
@@ -89,14 +102,15 @@ app.post('/message', function (req, res) {
                         })
                         if (botsay == "") {
                                 botsay = "오늘 전시가 없습니다."
-                        }else{
+                        } else {
                                 botsay += "\n자세히 보기: 전시자세히 전시번호\n" + today
                         }
-                        
+
                         respkakao(botsay, res)
                 })
         } else if (content == "일주전시" || content == "ㅇㅈㅈㅅ") {
-                connection.query('select EVENT_NUMBER, EVENT_NAME, EVENT_START, EVENT_END from COEX_EVENT where EVENT_START > date_add(now(), interval +0 day) and EVENT_START <= date_add(now(), interval +7 day)', function (err, rows) {
+                sqlquery = "select EVENT_NUMBER, EVENT_NAME, EVENT_START, EVENT_END from COEX_EVENT where EVENT_START > date_add(now(), interval +0 day) and EVENT_START <= date_add(now(), interval +7 day)"
+                connection.query(sqlquery, function (err, rows) {
                         if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
@@ -109,10 +123,10 @@ app.post('/message', function (req, res) {
                                         "시작일:" + row.EVENT_START.toLocaleDateString("ko-kr") + "\n" +
                                         "종료일:" + row.EVENT_END.toLocaleDateString("ko-kr") + "\n"
                         })
-                        
+
                         if (botsay == "") {
                                 botsay = "전시가 없습니다."
-                        }else{
+                        } else {
                                 botsay += "\n자세히 보기: 전시자세히 행사번호"
                         }
                         respkakao(botsay, res)
@@ -125,7 +139,7 @@ app.post('/message', function (req, res) {
                 var detail = content.split("전시자세히")
                 if (detail[1] && detail[1] > 0) {
                         var detailNum = detail[1]
-                        var sqlquery = "select EVENT_NUMBER, EVENT_NAME, EVENT_START, EVENT_END, EVENT_PLACE, EVENT_FEE, EVENT_HOST, EMAIL, HOMEPAGE from COEX_EVENT where EVENT_NUMBER = " + detailNum
+                        sqlquery = "select EVENT_NUMBER, EVENT_NAME, EVENT_START, EVENT_END, EVENT_PLACE, EVENT_FEE, EVENT_HOST, EMAIL, HOMEPAGE from COEX_EVENT where EVENT_NUMBER = " + detailNum
                         connection.query(sqlquery, function (err, rows) {
                                 if (err) throw errorthrow()
                                 Object.keys(rows).forEach(function (key) {
@@ -161,7 +175,8 @@ app.post('/message', function (req, res) {
                 }
         }
         else if (content == "오늘컨벤션" || content == "ㅇㄴㅋㅂㅅ" || content == "ㅇㄴㅋㅄ") {
-                connection.query('select CON_NUMBER, CON_NAME, CON_END, CON_PLACE from COEX_CONVENTION where CON_START <= CURRENT_DATE( ) and CON_END >= CURRENT_DATE( )', function (err, rows) {
+                sqlquery = "select CON_NUMBER, CON_NAME, CON_END, CON_PLACE from COEX_CONVENTION where CON_START <= CURRENT_DATE( ) and CON_END >= CURRENT_DATE( )"
+                connection.query(sqlquery, function (err, rows) {
                         if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
@@ -177,13 +192,14 @@ app.post('/message', function (req, res) {
 
                         if (botsay == "") {
                                 botsay = "오늘 전시가 없습니다."
-                        }else{
+                        } else {
                                 botsay += "\n자세히 보기: 컨벤션자세히 컨벤션번호\n" + today
                         }
                         respkakao(botsay, res)
                 })
         } else if (content == "일주컨벤션" || content == "ㅇㅈㅋㅄ" || content == "ㅇㅈㅋㅂㅅ") {
-                connection.query('select CON_NUMBER, CON_NAME, CON_START, CON_END from COEX_CONVENTION where CON_START > date_add(now(), interval +0 day) and CON_START <= date_add(now(), interval +7 day)', function (err, rows) {
+                sqlquery = "select CON_NUMBER, CON_NAME, CON_START, CON_END from COEX_CONVENTION where CON_START > date_add(now(), interval +0 day) and CON_START <= date_add(now(), interval +7 day)"
+                connection.query(sqlquery, function (err, rows) {
                         if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
@@ -209,7 +225,7 @@ app.post('/message', function (req, res) {
                 var detail = content.split("컨벤션자세히")
                 if (detail[1] && detail[1] > 0) {
                         var detailNum = detail[1]
-                        var sqlquery = "select CON_NUMBER, CON_NAME, CON_START, CON_END, CON_PLACE, CON_HOST, PHONE, EMAIL, HOMEPAGE from COEX_CONVENTION where CON_NUMBER = " + detailNum
+                        sqlquery = "select CON_NUMBER, CON_NAME, CON_START, CON_END, CON_PLACE, CON_HOST, PHONE, EMAIL, HOMEPAGE from COEX_CONVENTION where CON_NUMBER = " + detailNum
                         connection.query(sqlquery, function (err, rows) {
                                 if (err) throw errorthrow()
                                 Object.keys(rows).forEach(function (key) {
@@ -256,7 +272,7 @@ app.post('/message', function (req, res) {
                                 if (user_key == admincheck || user_key == oakadmin) {
                                         var detail = content.split("메뉴등록")
                                         var detailmeal = detail[1]
-                                        var sqlquery = "insert into OAKWOOD (OAKWOOD_MEAL) VALUES('" + detailmeal + "')"
+                                        sqlquery = "insert into OAKWOOD (OAKWOOD_MEAL) VALUES('" + detailmeal + "')"
                                         connection.query(sqlquery, function (err, rows) {
                                                 if (err) throw errorthrow()
                                         })
@@ -269,7 +285,8 @@ app.post('/message', function (req, res) {
                         })
                 })
         } else if (content == "오크" || content == "ㅇㅋ") {
-                connection.query('select OAKWOOD_TODAY, OAKWOOD_MEAL from OAKWOOD where OAKWOOD_NUMBER = (select MAX(OAKWOOD_NUMBER) from OAKWOOD )', function (err, rows) {
+                sqlquery = "select OAKWOOD_TODAY, OAKWOOD_MEAL from OAKWOOD where OAKWOOD_NUMBER = (select MAX(OAKWOOD_NUMBER) from OAKWOOD )"
+                connection.query(sqlquery, function (err, rows) {
                         if (err) throw errorthrow()
                         Object.keys(rows).forEach(function (key) {
                                 var row = rows[key]
@@ -304,7 +321,7 @@ app.post('/message', function (req, res) {
                                 if (user_key == admincheck || user_key == tradeadmin) {
                                         var detail = content.split("식단등록")
                                         var detailmeal = detail[1]
-                                        var sqlquery = "insert into Gunea (Gunea_MEAL) VALUES('" + detailmeal + "')"
+                                        sqlquery = "insert into Gunea (Gunea_MEAL) VALUES('" + detailmeal + "')"
 
                                         connection.query(sqlquery, function (err, rows) {
                                                 if (err) throw errorthrow()
@@ -319,7 +336,8 @@ app.post('/message', function (req, res) {
                         })
                 })
         } else if (content == "무역" || content == "ㅁㅇ") {
-                connection.query('select Gunea_TODAY, Gunea_MEAL from Gunea where Gunea_NUMBER = (select MAX(Gunea_NUMBER) from Gunea )', function (err, rows) {
+                sqlquery = "select Gunea_TODAY, Gunea_MEAL from Gunea where Gunea_NUMBER = (select MAX(Gunea_NUMBER) from Gunea )"
+                connection.query(sqlquery, function (err, rows) {
                         if (err) throw errorthrow()
 
                         Object.keys(rows).forEach(function (key) {
@@ -346,7 +364,8 @@ app.post('/message', function (req, res) {
                                 admincheck = row.UserID
                         })
                         if (user_key == admincheck) {
-                                connection.query('select LOG_NUMBER, LOG_TODAY, LOG_TEXT from LOGTEXT where LOG_NUMBER > (select Max(LOG_NUMBER)-10 from LOGTEXT)', function (err, rows) {
+                                sqlquery = "select LOG_NUMBER, LOG_TODAY, LOG_TEXT from LOGTEXT where LOG_NUMBER > (select Max(LOG_NUMBER)-10 from LOGTEXT)"
+                                connection.query(sqlquery, function (err, rows) {
                                         if (err) throw errorthrow()
                                         Object.keys(rows).forEach(function (key) {
                                                 var row = rows[key]
@@ -469,7 +488,7 @@ app.post('/message', function (req, res) {
                 botsay = "취직할 수 있을까.."
                 respkakao(botsay, res)
         } else {
-                botsay = "[코엑스인 사용법]\n다음의 키워드를 입력해주세요\n[행사검색]\n 전시, 컨벤션\n[구내식당]\n 오크우드: 오크 or ㅇㅋ\n무역센터: 무역 or ㅁㅇ"
+                botsay = "[코엑스인 사용법]\n다음의 키워드를 입력해주세요\n[행사검색]\n 전시, 컨벤션\n[구내식당]\n 무역센터: 무역 or ㅁㅇ"
                 respkakao(botsay, res)
         }
         var logsqlquery = "insert into LOGTEXT (LOG_TEXT, LOG_USER) VALUES('" + content + "','" + user_key + "')"
