@@ -108,6 +108,7 @@ app.post('/message', function (req, res) {
 
                         respkakao(botsay, res)
                 })
+                connection.end()
         } else if (content == "일주전시" || content == "ㅇㅈㅈㅅ") {
                 sqlquery = "select EVENT_NUMBER, EVENT_NAME, EVENT_START, EVENT_END from COEX_EVENT where EVENT_START > date_add(now(), interval +0 day) and EVENT_START <= date_add(now(), interval +7 day)"
                 connection.query(sqlquery, function (err, rows) {
@@ -131,6 +132,7 @@ app.post('/message', function (req, res) {
                         }
                         respkakao(botsay, res)
                 })
+                connection.end()
         } else if (content == "전시" || content == "ㅈㅅ") {
                 botsay = "진행중 : 오늘전시 또는 ㅇㄴㅈㅅ\n " +
                         "Day+7 행사 : 일주전시 또는 ㅇㅈㅈㅅ "
@@ -170,6 +172,7 @@ app.post('/message', function (req, res) {
                                 }
                                 respkakao(botsay, res)
                         })
+                        connection.end()
                 } else {
                         respkakao(botsay, res)
                 }
@@ -197,6 +200,7 @@ app.post('/message', function (req, res) {
                         }
                         respkakao(botsay, res)
                 })
+                connection.end()
         } else if (content == "일주컨벤션" || content == "ㅇㅈㅋㅄ" || content == "ㅇㅈㅋㅂㅅ") {
                 sqlquery = "select CON_NUMBER, CON_NAME, CON_START, CON_END from COEX_CONVENTION where CON_START > date_add(now(), interval +0 day) and CON_START <= date_add(now(), interval +7 day)"
                 connection.query(sqlquery, function (err, rows) {
@@ -217,6 +221,7 @@ app.post('/message', function (req, res) {
                         }
                         respkakao(botsay, res)
                 })
+                connection.end()
         } else if (content == "컨벤션" || content == "ㅋㅄ" || content == "ㅋㅂㅅ") {
                 botsay = "진행중 : 오늘컨벤션 또는 ㅇㄴㅋㅂㅅ\n " +
                         "Day+7 행사 : 일주컨벤션 또는 ㅇㅈㅋㅂㅅ "
@@ -248,6 +253,7 @@ app.post('/message', function (req, res) {
                                 }
                                 respkakao(botsay, res)
                         })
+                        connection.end()
                 }
                 else {
                         respkakao(botsay, res)
@@ -284,6 +290,7 @@ app.post('/message', function (req, res) {
                                 }
                         })
                 })
+                connection.end()
         } else if (content == "오크" || content == "ㅇㅋ") {
                 sqlquery = "select OAKWOOD_TODAY, OAKWOOD_MEAL from OAKWOOD where OAKWOOD_NUMBER = (select MAX(OAKWOOD_NUMBER) from OAKWOOD )"
                 connection.query(sqlquery, function (err, rows) {
@@ -301,6 +308,7 @@ app.post('/message', function (req, res) {
                         }
                         respkakao(botsay, res)
                 })
+                connection.end()
         }
         else if (content.indexOf("식단등록") != -1) {
                 var admincheck = "admin"
@@ -335,6 +343,7 @@ app.post('/message', function (req, res) {
                                 }
                         })
                 })
+                connection.end()
         } else if (content == "무역" || content == "ㅁㅇ") {
                 sqlquery = "select Gunea_TODAY, Gunea_MEAL from Gunea where Gunea_NUMBER = (select MAX(Gunea_NUMBER) from Gunea )"
                 connection.query(sqlquery, function (err, rows) {
@@ -353,7 +362,7 @@ app.post('/message', function (req, res) {
                         }
                         respkakao(botsay, res)
                 })
-
+                connection.end()
         } else if (content == "ㄺ" || content == "로그") {
                 var admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
 
@@ -381,6 +390,7 @@ app.post('/message', function (req, res) {
                                 respkakao(botsay, res)
                         }
                 })
+                connection.end()
         } else if (content == "오크우드 권한승인") {
                 var admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
                 connection.query(admincheck, function (err, rows) {
@@ -410,6 +420,7 @@ app.post('/message', function (req, res) {
                                 respkakao(botsay, res)
                         }
                 })
+                connection.end()
         } else if (content == "무역센터 권한승인") {
                 var admincheck = "admin"
                 admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
@@ -439,11 +450,13 @@ app.post('/message', function (req, res) {
                                 respkakao(botsay, res)
                         }
                 })
+                connection.end()
         } else if (content == "오크우드 권한신청") {
                 oakuser = "UPDATE signUser SET UserID = '" + user_key + "' WHERE UserInfo = 'oakuser'"
                 connection.query(oakuser, function (err, rows) {
                         if (err) throw errorthrow()
                 })
+                connection.end()
                 botsay = "오크우드 메뉴등록 권한이 신청되었습니다."
                 respkakao(botsay, res)
         } else if (content == "무역센터 권한신청") {
@@ -451,6 +464,7 @@ app.post('/message', function (req, res) {
                 connection.query(tradeuser, function (err, rows) {
                         if (err) throw errorthrow()
                 })
+                connection.end()
                 botsay = "무역센터 식단등록 권한이 신청되었습니다."
                 respkakao(botsay, res)
         } else if (content == "라이브모드") {
@@ -466,6 +480,7 @@ app.post('/message', function (req, res) {
                                 if (err) throw errorthrow()
                         })
                 })
+                connection.end()
                 botsay = "성공하자서율이"
                 respkakao(botsay, res)
 
@@ -482,6 +497,7 @@ app.post('/message', function (req, res) {
                                 if (err) throw errorthrow()
                         })
                 })
+                connection.end()
                 botsay = "힘내자서율이"
                 respkakao(botsay, res)
         } else if (content == "서율") {
@@ -496,6 +512,7 @@ app.post('/message', function (req, res) {
         connection.query(logsqlquery, function (err, rows) {
                 if (err) throw errorthrow()
         })
+        connection.end()
         content.replace("\\", " ");
         systemlog = "echo [{date : " + todaylog + " } {" + user_key + " : " + content + "}]" + endlog
         exec(systemlog, function (err, stdout, stderr) { })
