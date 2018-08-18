@@ -258,59 +258,13 @@ app.post('/message', function (req, res) {
                 else {
                         respkakao(botsay, res)
                 }
-        }
-        else if (content.indexOf("메뉴등록") != -1) {
-                var admincheck = "admin"
-                admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
-                connection.query(admincheck, function (err, rows) {
-                        if (err) throw errorthrow()
-                        Object.keys(rows).forEach(function (key) {
-                                var row = rows[key]
-                                admincheck = row.UserID
-                        })
-                        oakadmin = "SELECT UserID from signUser where UserInfo = 'oakadmin'"
-                        connection.query(oakadmin, function (err, rows) {
-                                if (err) throw errorthrow()
-                                Object.keys(rows).forEach(function (key) {
-                                        var row = rows[key]
-                                        oakadmin = row.UserID
-                                })
-                                if (user_key == admincheck || user_key == oakadmin) {
-                                        var detail = content.split("메뉴등록")
-                                        var detailmeal = detail[1]
-                                        sqlquery = "insert into OAKWOOD (OAKWOOD_MEAL) VALUES('" + detailmeal + "')"
-                                        connection.query(sqlquery, function (err, rows) {
-                                                if (err) throw errorthrow()
-                                        })
-                                        botsay = "등록성공."
-                                        respkakao(botsay, res)
-                                } else {
-                                        botsay = "권한이 없습니다."
-                                        respkakao(botsay, res)
-                                }
-                        })
-                })
-                connection.end()
         } else if (content == "오크" || content == "ㅇㅋ") {
-                sqlquery = "select OAKWOOD_TODAY, OAKWOOD_MEAL from OAKWOOD where OAKWOOD_NUMBER = (select MAX(OAKWOOD_NUMBER) from OAKWOOD )"
-                connection.query(sqlquery, function (err, rows) {
-                        if (err) throw errorthrow()
-                        Object.keys(rows).forEach(function (key) {
-                                var row = rows[key]
-                                var t = row.OAKWOOD_TODAY.getDate()
-                                var td = new Date()
-                                if (t == td.getDate()) {
-                                        botsay = today + "\n" + row.OAKWOOD_MEAL
-                                }
-                        })
-                        if (botsay == "" || (botsay == today + "\n")) {
-                                botsay = "식단준비중입니다."
-                        }
-                        respkakao(botsay, res)
-                })
-                connection.end()
+
+                botsay = "오크우드 측에서 식단 제공이 불가하다 하여 제공하지 못합니다."
+                respkakao(botsay, res)
+
         }
-        else if (content.indexOf("식단등록") != -1) {
+        else if ((content.indexOf("식단등록") != -1) || (content.indexOf("메뉴등록") != -1)) {
                 var admincheck = "admin"
                 admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
                 connection.query(admincheck, function (err, rows) {
@@ -363,6 +317,8 @@ app.post('/message', function (req, res) {
                         respkakao(botsay, res)
                 })
                 connection.end()
+
+
         } else if (content == "ㄺ" || content == "로그") {
                 var admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
 
@@ -391,36 +347,8 @@ app.post('/message', function (req, res) {
                         }
                 })
                 connection.end()
-        } else if (content == "오크우드 권한승인") {
-                var admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
-                connection.query(admincheck, function (err, rows) {
-                        if (err) throw errorthrow()
-                        Object.keys(rows).forEach(function (key) {
-                                var row = rows[key]
-                                admincheck = row.UserID
-                        })
-                        if (user_key == admincheck) {
-                                oakuser = "SELECT UserID from signUser where UserInfo = 'oakuser'"
-                                connection.query(oakuser, function (err, rows) {
-                                        if (err) throw errorthrow()
 
-                                        Object.keys(rows).forEach(function (key) {
-                                                var row = rows[key]
-                                                oakuser = row.UserID
-                                        })
-                                        oakadmin = "UPDATE signUser SET UserID = '" + oakuser + "' WHERE UserInfo = 'oakadmin'"
-                                        connection.query(oakadmin, function (err, rows) {
-                                                if (err) throw errorthrow()
-                                        })
-                                })
-                                botsay = "오크우드 메뉴등록 권한이 승인되었습니다."
-                                respkakao(botsay, res)
-                        } else {
-                                botsay = "권한이 없습니다."
-                                respkakao(botsay, res)
-                        }
-                })
-                connection.end()
+
         } else if (content == "무역센터 권한승인") {
                 var admincheck = "admin"
                 admincheck = "SELECT UserID from signUser where UserInfo = 'admin'"
@@ -451,14 +379,7 @@ app.post('/message', function (req, res) {
                         }
                 })
                 connection.end()
-        } else if (content == "오크우드 권한신청") {
-                oakuser = "UPDATE signUser SET UserID = '" + user_key + "' WHERE UserInfo = 'oakuser'"
-                connection.query(oakuser, function (err, rows) {
-                        if (err) throw errorthrow()
-                })
-                connection.end()
-                botsay = "오크우드 메뉴등록 권한이 신청되었습니다."
-                respkakao(botsay, res)
+
         } else if (content == "무역센터 권한신청") {
                 tradeuser = "UPDATE signUser SET UserID = '" + user_key + "' WHERE UserInfo = 'tradeuser'"
                 connection.query(tradeuser, function (err, rows) {
@@ -467,6 +388,7 @@ app.post('/message', function (req, res) {
                 connection.end()
                 botsay = "무역센터 식단등록 권한이 신청되었습니다."
                 respkakao(botsay, res)
+
         } else if (content == "라이브모드") {
                 var admincheck = "SELECT UserID from signUser where UserInfo = 'liveadmin'"
                 connection.query(admincheck, function (err, rows) {
