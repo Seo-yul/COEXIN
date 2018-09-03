@@ -516,6 +516,7 @@ app.post('/message', function (req, res) {
         content.replace("\\", " ");
         systemlog = "echo [{date : " + todaylog + " } {" + user_key + " : " + content + "}]" + endlog
         exec(systemlog, function (err, stdout, stderr) { })
+        
 })
 app.listen(port, () => {
         console.log('Connect ' + port + ' port!')
