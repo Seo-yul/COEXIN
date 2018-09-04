@@ -6,7 +6,9 @@ const dbconfig = require('./database.js')
 const connection = mysql.createConnection(dbconfig)
 const app = express()
 const exec = require("child_process").exec
+
 app.use(bodyParser.json())
+
 const todayClock = (v) => {
         const s = "00" + v
         return s.substr(s.length - 2, 2)
@@ -16,7 +18,6 @@ let d //현재 날짜 Date() 저장
 let todaylog //로그에 사용 YYYY-MM-DD-HH:mm:ss 
 let today //Date()를 이용 YYYY년MM월DD일
 let datelog //Date()를 이용 YYYY-MM-DD
-let systemlog //로그파일 생성 명령
 let oakuser //오크우드 관리자 신청
 let tradeuser //무역센터 관리자 신청
 let oakadmin //오크우드 관리자 
@@ -26,29 +27,7 @@ let user_key //클라이언트 key
 let type //클라이언트 msg type
 let content //req 값
 let sqlquery //query 문
-/**
- * 
- * @param {*} botsay 클라이언트에게 전송할 내용
- * @param {*} res response
- */
-function respkakao(botsay, res) {
-        botmsg = {
-                'message': {
-                        'text': botsay
-                }
-        }
-        res.set({
-                'content-type': 'application/json'
-        }).send(JSON.stringify(botmsg))
-}
-/**
- * 
- * @param {*} res 오류메시지 담아 response 하기위함
- */
-function errorthrow(res) {
-        botsay = "오류발생! 죄송합니다. 오류가 발생한 기능을 남겨주시면 감사하겠습니다."
-        respkakao(botsay, res)
-}
+
 /**
  * 카카오서버는 /keyboard 주기적으로 봇서버의 상태를 확인함
  */
@@ -422,9 +401,6 @@ app.post('/message', function (req, res) {
                 connection.end()
                 botsay = "힘내자서율이"
                 respkakao(botsay, res)
-        } else if (content == "서율") {
-                botsay = "취직할 수 있을까.."
-                respkakao(botsay, res)
         } else {
                 botsay = "[코엑스인 사용법]\n다음의 키워드를 입력해주세요\n[행사검색]\n 전시, 컨벤션\n[구내식당]\n 무역센터: 무역 or ㅁㅇ"
                 respkakao(botsay, res)
@@ -435,10 +411,31 @@ app.post('/message', function (req, res) {
                 if (err) throw errorthrow()
         })
         connection.end()
-        content.replace("\\", " ");
-        systemlog = "echo [{date : " + todaylog + " } {" + user_key + " : " + content + "}]" + endlog
-        exec(systemlog, function (err, stdout, stderr) { })
+                      
 })
+/**
+ * 
+ * @param {*} botsay 클라이언트에게 전송할 내용
+ * @param {*} res response
+ */
+function respkakao(botsay, res) {
+        botmsg = {
+                'message': {
+                        'text': botsay
+                }
+        }
+        res.set({
+                'content-type': 'application/json'
+        }).send(JSON.stringify(botmsg))
+}
+/**
+ * 
+ * @param {*} res 오류메시지 담아 response 하기위함
+ */
+function errorthrow(res) {
+        botsay = "오류발생! 죄송합니다. 오류가 발생한 기능을 남겨주시면 감사하겠습니다."
+        respkakao(botsay, res)
+}
 app.listen(port, () => {
         console.log('Connect ' + port + ' port!')
 })
